@@ -26,8 +26,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import mtfn.MetaphonePtBr;
+
 import javax.validation.Valid;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,10 +49,13 @@ class OwnerController {
 	private final OwnerRepository owners;
 
 	private VisitRepository visits;
+	
+	private final PhoneticOwnerRepository phoneticOwners;
 
-	public OwnerController(OwnerRepository clinicService, VisitRepository visits) {
+	public OwnerController(OwnerRepository clinicService, VisitRepository visits, PhoneticOwnerRepository phoneticOwners) {
 		this.owners = clinicService;
 		this.visits = visits;
+		this.phoneticOwners = phoneticOwners;
 	}
 
 	@InitBinder
@@ -68,6 +76,13 @@ class OwnerController {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 		else {
+			PhoneticOwner phoneticOwner = new PhoneticOwner();
+			phoneticOwner.setFirstName(new MetaphonePtBr(owner.getFirstName()).toString());
+			phoneticOwner.setLastName(new MetaphonePtBr(owner.getLastName()).toString());
+			phoneticOwner.setOwner(owner);
+			List<PhoneticOwner> phoneticOwners = new ArrayList<PhoneticOwner>();
+			phoneticOwners.add(phoneticOwner);
+			owner.setPhoneticOwner(phoneticOwners);
 			this.owners.save(owner);
 			return "redirect:/owners/" + owner.getId();
 		}
@@ -86,9 +101,12 @@ class OwnerController {
 		if (owner.getLastName() == null) {
 			owner.setLastName(""); // empty string signifies broadest possible search
 		}
-
-		// find owners by last name
-		Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
+		Collection<Owner> results = new ArrayList<Owner>();
+		String phoneticName = new MetaphonePtBr(owner.getLastName()).toString();
+		List<PhoneticOwner> phoneticOwners = this.phoneticOwners.findByLastName(phoneticName);
+		for(PhoneticOwner phoneticOwner : phoneticOwners) {
+			results.add(this.owners.findById(phoneticOwner.getId()));
+		}
 		if (results.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");

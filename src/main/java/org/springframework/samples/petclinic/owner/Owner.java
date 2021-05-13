@@ -61,6 +61,17 @@ public class Owner extends Person {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
 	private Set<Pet> pets;
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
+	private List<PhoneticOwner> phoneticOwner;
+
+	public List<PhoneticOwner> getPhoneticOwner() {
+		return phoneticOwner;
+	}
+
+	public void setPhoneticOwner(List<PhoneticOwner> phoneticOwner) {
+		this.phoneticOwner = phoneticOwner;
+	}
 
 	public String getAddress() {
 		return this.address;
