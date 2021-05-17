@@ -43,7 +43,9 @@
       </div>
     </div>
   </form>
-
+	<div class="col-sm-offset-2 col-sm-10">
+  	<a th:href="@{/owners/{id}(id=${pet.owner.id})}" class="btn btn-default">Cancel</a>
+  </div>
   <br />
   <b>Previous Visits</b>
   <table class="table table-striped">
