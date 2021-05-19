@@ -92,7 +92,7 @@ class ClinicServiceTests {
 
 	@Test
 	void shouldFindSingleOwnerWithPet() {
-		Owner owner = this.owners.findById(1);
+		Owner owner = this.owners.findById(1).get();
 		assertThat(owner.getLastName()).startsWith("Franklin");
 		assertThat(owner.getPets()).hasSize(1);
 		assertThat(owner.getPets().get(0).getType()).isNotNull();
@@ -121,7 +121,7 @@ class ClinicServiceTests {
 	@Test
 	@Transactional
 	void shouldUpdateOwner() {
-		Owner owner = this.owners.findById(1);
+		Owner owner = this.owners.findById(1).get();
 		String oldLastName = owner.getLastName();
 		String newLastName = oldLastName + "X";
 
@@ -129,7 +129,7 @@ class ClinicServiceTests {
 		this.owners.save(owner);
 
 		// retrieving new name from database
-		owner = this.owners.findById(1);
+		owner = this.owners.findById(1).get();
 		assertThat(owner.getLastName()).isEqualTo(newLastName);
 	}
 
@@ -154,7 +154,7 @@ class ClinicServiceTests {
 	@Test
 	@Transactional
 	void shouldInsertPetIntoDatabaseAndGenerateId() {
-		Owner owner6 = this.owners.findById(6);
+		Owner owner6 = this.owners.findById(6).get();
 		int found = owner6.getPets().size();
 
 		Pet pet = new Pet();
@@ -168,7 +168,7 @@ class ClinicServiceTests {
 		this.pets.save(pet);
 		this.owners.save(owner6);
 
-		owner6 = this.owners.findById(6);
+		owner6 = this.owners.findById(6).get();
 		assertThat(owner6.getPets().size()).isEqualTo(found + 1);
 		// checks that id has been generated
 		assertThat(pet.getId()).isNotNull();

@@ -27,12 +27,28 @@
         <td th:text="*{telephone}"></td>
       </tr>
     </table>
-  
-    <a th:href="@{{id}/edit(id=${owner.id})}" class="btn btn-default">Edit
-      Owner</a>
-    <a th:href="@{{id}/pets/new(id=${owner.id})}" class="btn btn-default">Add
-      New Pet</a>
-  
+  	<div class="container">
+	  	<div class="row">
+		  	<div class="col-12">
+			    <a th:href="@{{id}/edit(id=${owner.id})}" class="btn btn-default">Edit
+			      Owner</a>
+			    <a th:href="@{{id}/pets/new(id=${owner.id})}" class="btn btn-default">Add
+			      New Pet</a>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-12">
+				<form th:action="@{{id}/delete(id=${owner.id})}"method="POST">
+					<button type="submit" class="btn btn-default">Delete
+					      Owner</button>
+				</form>
+				<h1 th:if="${error}">
+				    <p th:text="${error}"/>
+				</h1>
+			</div>
+		</div>
+	</div>
     <br />
     <br />
     <br />
