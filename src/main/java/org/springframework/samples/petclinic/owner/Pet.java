@@ -24,12 +24,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
@@ -60,7 +62,7 @@ public class Pet extends NamedEntity {
 	@JoinColumn(name = "owner_id")
 	private Owner owner;
 
-	@Transient
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "pet", fetch=FetchType.EAGER)
 	private Set<Visit> visits = new LinkedHashSet<>();
 
 	public void setBirthDate(LocalDate birthDate) {
@@ -106,7 +108,7 @@ public class Pet extends NamedEntity {
 
 	public void addVisit(Visit visit) {
 		getVisitsInternal().add(visit);
-		visit.setPetId(this.getId());
+		visit.setPet(this);
 	}
 
 }

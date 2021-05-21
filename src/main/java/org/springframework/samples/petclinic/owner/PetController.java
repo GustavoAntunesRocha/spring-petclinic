@@ -21,6 +21,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -91,7 +93,7 @@ class PetController {
 
 	@GetMapping("/pets/{petId}/edit")
 	public String initUpdateForm(@PathVariable("petId") int petId, ModelMap model) {
-		Pet pet = this.pets.findById(petId);
+		Pet pet = this.pets.findById(petId).get();
 		model.put("pet", pet);
 		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 	}
@@ -110,4 +112,17 @@ class PetController {
 		}
 	}
 
+	@PostMapping(value="/pets/{petId}/delete")
+	public ModelAndView processOwnerDelete(@PathVariable("petId") int petId, RedirectAttributes redirectAttributes) {
+		Pet pet = this.pets.findById(petId).get();
+		if(pet.getVisits().isEmpty()) {
+			this.pets.deleteById(petId);
+			redirectAttributes.addFlashAttribute("error","Pet deleted!");
+			return new ModelAndView("redirect:/owners/"+pet.getOwner().getId());
+		}
+		else {
+			redirectAttributes.addFlashAttribute("error","Pet cannot be deleted because it has visits!");
+			return new ModelAndView("redirect:/owners/"+pet.getOwner().getId());
+		}
+	}
 }

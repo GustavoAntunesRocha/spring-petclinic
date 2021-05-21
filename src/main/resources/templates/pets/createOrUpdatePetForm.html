@@ -1,5 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org"
-  th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
+  th:replace="~{fragments/layout :: layout (~{::body},'pets')}">
 
 <body>
 
@@ -33,6 +33,10 @@
     </div>
   </form>
 	<div class="col-sm-offset-2 col-sm-10">
+	  <form th:action="@{/owners/{ownersId}/pets/{petId}/delete(petId=${pet.id},ownersId=${pet.owner.id})}"method="POST">
+					<button type="submit" class="btn btn-default">Delete
+					      Pet</button>
+	  </form>
   	<a th:href="@{/owners/{id}(id=${pet.owner.id})}" class="btn btn-default">Cancel</a>
   </div>
 </body>

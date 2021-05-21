@@ -45,6 +45,7 @@ import mtfn.MetaphonePtBr;
  * @author Michael Isvy
  */
 @Controller
+@RequestMapping(value="/owners")
 class OwnerController {
 
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
@@ -66,14 +67,14 @@ class OwnerController {
 		dataBinder.setDisallowedFields("id");
 	}
 
-	@GetMapping("/owners/new")
+	@GetMapping("/new")
 	public String initCreationForm(Map<String, Object> model) {
 		Owner owner = new Owner();
 		model.put("owner", owner);
 		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 	}
 
-	@PostMapping("/owners/new")
+	@PostMapping("/new")
 	public String processCreationForm(@Valid Owner owner, BindingResult result) {
 		if (result.hasErrors()) {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
@@ -91,7 +92,8 @@ class OwnerController {
 		}
 	}
 	
-	@RequestMapping(value="/owners/{ownerId}/delete", method=RequestMethod.POST)
+	
+	@RequestMapping(value="/{ownerId}/delete", method=RequestMethod.POST)
 	public String processOwnerDelete(@PathVariable("ownerId") int ownerId, RedirectAttributes redirectAttributes) {
 		Owner owner = this.owners.findById(ownerId).get();
 		if(!owner.getPets().isEmpty()) {
@@ -103,13 +105,13 @@ class OwnerController {
 		return "redirect:/owners/find";
 	}
 
-	@GetMapping("/owners/find")
+	@GetMapping("/find")
 	public String initFindForm(Map<String, Object> model) {
 		model.put("owner", new Owner());
 		return "owners/findOwners";
 	}
 
-	@GetMapping("/owners")
+	@GetMapping("")
 	public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
 
 		// allow parameterless GET request for /owners to return all records
@@ -139,14 +141,14 @@ class OwnerController {
 		}
 	}
 
-	@GetMapping("/owners/{ownerId}/edit")
+	@GetMapping("/{ownerId}/edit")
 	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
 		Owner owner = this.owners.findById(ownerId).get();
 		model.addAttribute(owner);
 		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 	}
 
-	@PostMapping("/owners/{ownerId}/edit")
+	@PostMapping("/{ownerId}/edit")
 	public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result,
 			@PathVariable("ownerId") int ownerId) {
 		if (result.hasErrors()) {
@@ -164,12 +166,12 @@ class OwnerController {
 	 * @param ownerId the ID of the owner to display
 	 * @return a ModelMap with the model attributes for the view
 	 */
-	@GetMapping("/owners/{ownerId}")
+	@GetMapping("/{ownerId}")
 	public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
 		ModelAndView mav = new ModelAndView("owners/ownerDetails");
 		Owner owner = this.owners.findById(ownerId).get();
 		for (Pet pet : owner.getPets()) {
-			pet.setVisitsInternal(visits.findByPetId(pet.getId()));
+			pet.setVisitsInternal(visits.findByPet(pet));
 		}
 		mav.addObject(owner);
 		return mav;

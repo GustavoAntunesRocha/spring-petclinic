@@ -18,9 +18,13 @@ package org.springframework.samples.petclinic.visit;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.owner.Pet;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Repository class for <code>Visit</code> domain objects All method names are compliant
@@ -42,8 +46,13 @@ public interface VisitRepository extends CrudRepository<Visit, Integer> {
 	 */
 	//void save(Visit visit) throws DataAccessException;
 
-	List<Visit> findByPetId(Integer petId);
+	List<Visit> findByPet(Pet pet);
 	
 	Optional<Visit> findById(Integer id);
+	
+	@Transactional
+	@Modifying
+	@Query("DELETE FROM Visit visit WHERE visit.id =:visitId")
+	void delete(@Param("visitId") Integer visitId);
 
 }
