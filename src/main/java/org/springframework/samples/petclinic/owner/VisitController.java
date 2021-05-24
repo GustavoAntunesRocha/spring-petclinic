@@ -19,6 +19,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
@@ -43,10 +44,13 @@ class VisitController {
 	private final VisitRepository visits;
 
 	private final PetRepository pets;
+	
+	private final VetRepository vets;
 
-	public VisitController(VisitRepository visits, PetRepository pets) {
+	public VisitController(VisitRepository visits, PetRepository pets, VetRepository vets) {
 		this.visits = visits;
 		this.pets = pets;
+		this.vets = vets;
 	}
 
 	@InitBinder
@@ -65,11 +69,13 @@ class VisitController {
 	public Visit loadPetWithVisit(@PathVariable("petId") int petId, Map<String, Object> model) {
 		Pet pet = this.pets.findById(petId).get();
 		pet.setVisitsInternal(this.visits.findByPet(pet));
+		model.put("vets", this.vets.findVets());
 		model.put("pet", pet);
 		Visit visit = new Visit();
 		pet.addVisit(visit);
 		return visit;
 	}
+	
 
 	// Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
 	@GetMapping("/owners/*/pets/{petId}/visits/new")
@@ -80,12 +86,12 @@ class VisitController {
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
-	public String processNewVisitForm(@Valid Visit visit, @PathVariable("petId") int petId, BindingResult result) {
+	public String processNewVisitForm(@Valid Visit visit, 
+			BindingResult result, Map<String, Object> model) {
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateVisitForm";
 		}
 		else {
-			visit.setPet(this.pets.findById(petId).get());
 			this.visits.save(visit);
 			return "redirect:/owners/{ownerId}";
 		}

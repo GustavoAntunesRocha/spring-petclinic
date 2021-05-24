@@ -34,6 +34,17 @@
         th:replace="~{fragments/inputField :: input ('Date', 'date', 'date')}"  />
       <input
         th:replace="~{fragments/inputField :: input ('Description', 'description', 'text')}" />
+        <div class="container">
+        <div class="row">
+          <div class="col-12">
+          <label for="vets" class="col-sm-2 control-label">Veterinarian</label>
+          <select name="vet" class="" th:field="*{vet}" id="vets">
+            <option value=""> -- </option>
+        	<option th:each="vet : ${vets}" th:value="${vet.getId()}" th:text="${vet.getFirstName() + ' ' + vet.getLastName()}"></option>
+          </select>
+        </div>
+        </div>
+        </div>
     </div>
 
     <div class="form-group">
@@ -43,9 +54,11 @@
       </div>
     </div>
   </form>
-	<div class="col-sm-offset-2 col-sm-10">
-  	<a th:href="@{/owners/{id}(id=${pet.owner.id})}" class="btn btn-default">Cancel</a>
-  </div>
+    <div class="form-group">
+	  <div class="col-sm-offset-2 col-sm-10">
+  	    <a th:href="@{/owners/{id}(id=${pet.owner.id})}" class="btn btn-default">Cancel</a>
+      </div>
+    </div>
   <br />
   <b>Previous Visits</b>
   <table class="table table-striped">

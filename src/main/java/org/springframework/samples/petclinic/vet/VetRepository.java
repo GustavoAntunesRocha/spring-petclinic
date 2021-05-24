@@ -16,10 +16,12 @@
 package org.springframework.samples.petclinic.vet;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -33,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Sam Brannen
  * @author Michael Isvy
  */
-public interface VetRepository extends Repository<Vet, Integer> {
+public interface VetRepository extends CrudRepository<Vet, Integer> {
 
 	/**
 	 * Retrieve all <code>Vet</code>s from the data store.
@@ -42,5 +44,12 @@ public interface VetRepository extends Repository<Vet, Integer> {
 	@Transactional(readOnly = true)
 	@Cacheable("vets")
 	Collection<Vet> findAll() throws DataAccessException;
+	
+	@Query("SELECT vet FROM Vet vet ORDER BY vet.lastName")
+	@Transactional(readOnly = true)
+	List<Vet> findVets();
+	
+	@Transactional(readOnly = true)
+	Vet findById(int vetId);
 
 }
