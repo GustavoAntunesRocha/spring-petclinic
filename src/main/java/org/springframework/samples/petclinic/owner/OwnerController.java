@@ -115,23 +115,31 @@ class OwnerController {
 	public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
 
 		// allow parameterless GET request for /owners to return all records
-		if (owner.getLastName() == null) {
-			owner.setLastName(""); // empty string signifies broadest possible search
-		}
-		Collection<Owner> results = new ArrayList<Owner>();
+		List<Owner> results = new ArrayList<Owner>();
 		String phoneticName = new MetaphonePtBr(owner.getLastName()).toString();
 		List<PhoneticOwner> phoneticOwners = this.phoneticOwners.findByLastName(phoneticName);
 		for(PhoneticOwner phoneticOwner : phoneticOwners) {
-			results.add(this.owners.findById(phoneticOwner.getId()).get());
+			results.add(this.owners.findById(phoneticOwner.getOwner().getId()).get());
+		}
+		if (owner.getLastName().isEmpty()) {
+			results = (List<Owner>) this.owners.findAll();
 		}
 		if (results.isEmpty()) {
-			// no owners found
-			result.rejectValue("lastName", "notFound", "not found");
-			return "owners/findOwners";
+			//Tries to search again but this time not phonetic
+			results = (List<Owner>) this.owners.findByLastName(owner.getLastName());
+			if (results.isEmpty()) {
+				//If not found tries to search for the firstname
+				results = (List<Owner>) this.owners.findByFirstName(owner.getLastName());
+				if (results.isEmpty()) {
+					// no owners found
+					result.rejectValue("lastName", "notFound", "not found");
+					return "owners/findOwners";
+				}
+			}
 		}
-		else if (results.size() == 1) {
+		if (results.size() == 1) {
 			// 1 owner found
-			owner = results.iterator().next();
+			owner = results.get(0);
 			return "redirect:/owners/" + owner.getId();
 		}
 		else {

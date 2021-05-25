@@ -116,7 +116,7 @@ class PetController {
 	public ModelAndView processOwnerDelete(@PathVariable("petId") int petId, RedirectAttributes redirectAttributes) {
 		Pet pet = this.pets.findById(petId).get();
 		if(pet.getVisits().isEmpty()) {
-			this.pets.deleteById(petId);
+			this.pets.delete(petId);
 			redirectAttributes.addFlashAttribute("error","Pet deleted!");
 			return new ModelAndView("redirect:/owners/"+pet.getOwner().getId());
 		}
