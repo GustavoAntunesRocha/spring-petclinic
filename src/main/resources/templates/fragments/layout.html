@@ -73,6 +73,11 @@
             <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
             <span>Error</span>
           </li>
+          <li>
+          	<form class="form-inline" th:action="@{/logout}" method="POST">
+              <button style="margin-top:15px" class="btn btn-danger btn-block btn-lg" type="submit" value="Sign Out">Sign Out</button>
+            </form>
+          </li>
 
         </ul>
       </div>
